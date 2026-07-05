@@ -3,35 +3,144 @@
     x:Class="bashta_mobile.Views.MyPotsPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="Dashboard">
+    Title="Moje saksije">
 
     <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="16">
+        <VerticalStackLayout Padding="24" Spacing="18">
+
             <Label
-                Text="Bashta"
-                Style="{StaticResource PageTitleLabelStyle}" />
+                Text="Moje saksije"
+                Style="{StaticResource PageTitleLabelStyle}"
+                SemanticProperties.HeadingLevel="Level1" />
 
-            <Border Style="{StaticResource CardBorderStyle}">
-                <VerticalStackLayout Spacing="8">
-                    <Label
-                        Text="MyPotsPage"
-                        Style="{StaticResource SectionTitleLabelStyle}" />
-                    <Label
-                        Text="Pametna saksija za paradajz"
-                        Style="{StaticResource BodyLabelStyle}" />
-                </VerticalStackLayout>
+            <Label
+                Text="{Binding SummaryText}"
+                Style="{StaticResource BodyLabelStyle}" />
+
+            <ActivityIndicator
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}" />
+
+            <Border
+                IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotNullOrEmptyConverter}}"
+                Style="{StaticResource CardBorderStyle}">
+                <Label
+                    Text="{Binding ErrorMessage}"
+                    TextColor="{StaticResource ErrorColor}"
+                    Style="{StaticResource BodyLabelStyle}" />
             </Border>
 
-            <Border Style="{StaticResource CardBorderStyle}">
-                <VerticalStackLayout Spacing="8">
-                    <Label
-                        Text="Na šta obratiti pažnju - MyPotsPage"
-                        Style="{StaticResource SectionTitleLabelStyle}" />
-                    <Label
-                        Text="bla bla"
-                        Style="{StaticResource BodyLabelStyle}" />
-                </VerticalStackLayout>
-            </Border>
+            <CollectionView
+                ItemsSource="{Binding Pots}"
+                SelectionMode="None">
+
+                <CollectionView.EmptyView>
+                    <Border Style="{StaticResource CardBorderStyle}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label
+                                Text="Nema dodanih saksija"
+                                Style="{StaticResource SectionTitleLabelStyle}" />
+                            <Label
+                                Text="Dodavanje novih saksija predviđeno je kao dio skalabilnosti sistema."
+                                Style="{StaticResource BodyLabelStyle}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </CollectionView.EmptyView>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource CardBorderStyle}">
+                            <VerticalStackLayout Spacing="10">
+
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label
+                                        Grid.Column="0"
+                                        Text="{Binding Name}"
+                                        FontSize="20"
+                                        FontAttributes="Bold"
+                                        TextColor="{StaticResource TextPrimaryColor}" />
+
+                                    <Label
+                                        Grid.Column="1"
+                                        Text="{Binding StatusText}"
+                                        FontSize="12"
+                                        TextColor="{StaticResource EmeraldGreen}"
+                                        VerticalOptions="Center" />
+                                </Grid>
+
+                                <Label
+                                    Text="{Binding PlantName}"
+                                    FontSize="16"
+                                    FontAttributes="Bold"
+                                    TextColor="{StaticResource TextSecondaryColor}" />
+
+                                <Grid
+                                    ColumnDefinitions="Auto,*"
+                                    RowDefinitions="Auto,Auto,Auto"
+                                    ColumnSpacing="10"
+                                    RowSpacing="8">
+
+                                    <Label
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        Text="Tip:"
+                                        FontAttributes="Bold"
+                                        TextColor="{StaticResource TextPrimaryColor}" />
+
+                                    <Label
+                                        Grid.Row="0"
+                                        Grid.Column="1"
+                                        Text="{Binding PlantTypeName}"
+                                        Style="{StaticResource BodyLabelStyle}" />
+
+                                    <Label
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        Text="Lokacija:"
+                                        FontAttributes="Bold"
+                                        TextColor="{StaticResource TextPrimaryColor}" />
+
+                                    <Label
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        Text="{Binding Location}"
+                                        Style="{StaticResource BodyLabelStyle}" />
+
+                                    <Label
+                                        Grid.Row="2"
+                                        Grid.Column="0"
+                                        Text="Datum:"
+                                        FontAttributes="Bold"
+                                        TextColor="{StaticResource TextPrimaryColor}" />
+
+                                    <Label
+                                        Grid.Row="2"
+                                        Grid.Column="1"
+                                        Text="{Binding CreatedAtText}"
+                                        Style="{StaticResource BodyLabelStyle}" />
+
+                                </Grid>
+
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Button
+                Text="Dodaj novu saksiju"
+                Command="{Binding AddPotCommand}"
+                Style="{StaticResource SecondaryButtonStyle}"
+                SemanticProperties.Description="Dodaj novu pametnu saksiju"
+                SemanticProperties.Hint="Otvara formu za dodavanje nove saksije u budućoj verziji aplikacije" />
+
+            <Button
+                Text="Osvježi listu"
+                Command="{Binding LoadCommand}"
+                Style="{StaticResource PrimaryButtonStyle}"
+                SemanticProperties.Description="Osvježi listu saksija"
+                SemanticProperties.Hint="Ponovo učitava saksije povezane s korisnikom" />
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
