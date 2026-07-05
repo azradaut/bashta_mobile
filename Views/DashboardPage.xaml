@@ -6,19 +6,74 @@
     Title="Dashboard">
 
     <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="16">
+        <VerticalStackLayout Padding="24" Spacing="18">
+
             <Label
                 Text="Bashta"
-                Style="{StaticResource PageTitleLabelStyle}" />
+                Style="{StaticResource PageTitleLabelStyle}"
+                SemanticProperties.HeadingLevel="Level1" />
+
+            <ActivityIndicator
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}" />
+
+            <Border
+                IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotNullOrEmptyConverter}}"
+                Style="{StaticResource CardBorderStyle}">
+                <Label
+                    Text="{Binding ErrorMessage}"
+                    TextColor="{StaticResource ErrorColor}"
+                    Style="{StaticResource BodyLabelStyle}" />
+            </Border>
 
             <Border Style="{StaticResource CardBorderStyle}">
-                <VerticalStackLayout Spacing="8">
+                <VerticalStackLayout Spacing="10">
                     <Label
                         Text="Moje saksije"
                         Style="{StaticResource SectionTitleLabelStyle}" />
+
                     <Label
-                        Text="Pametna saksija za paradajz"
+                        Text="{Binding PotName}"
+                        FontSize="20"
+                        FontAttributes="Bold"
+                        TextColor="{StaticResource TextPrimaryColor}" />
+
+                    <Label
+                        Text="{Binding PlantName}"
                         Style="{StaticResource BodyLabelStyle}" />
+
+                    <Grid
+                        ColumnDefinitions="*,*"
+                        RowDefinitions="Auto,Auto"
+                        ColumnSpacing="12"
+                        RowSpacing="12"
+                        Margin="0,10,0,0">
+
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="0">
+                            <Label Text="Vlažnost tla" Style="{StaticResource BodyLabelStyle}" />
+                            <Label Text="{Binding SoilMoisture}" FontSize="22" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="1">
+                            <Label Text="Temperatura" Style="{StaticResource BodyLabelStyle}" />
+                            <Label Text="{Binding Temperature}" FontSize="22" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="0">
+                            <Label Text="Vlažnost zraka" Style="{StaticResource BodyLabelStyle}" />
+                            <Label Text="{Binding AirHumidity}" FontSize="22" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="1">
+                            <Label Text="Svjetlost" Style="{StaticResource BodyLabelStyle}" />
+                            <Label Text="{Binding LightIntensity}" FontSize="22" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Label
+                        Text="{Binding LastReading}"
+                        Style="{StaticResource BodyLabelStyle}"
+                        Margin="0,8,0,0" />
                 </VerticalStackLayout>
             </Border>
 
@@ -27,11 +82,24 @@
                     <Label
                         Text="Na šta obratiti pažnju"
                         Style="{StaticResource SectionTitleLabelStyle}" />
+
                     <Label
-                        Text="Ovdje će biti prikazane preporuke, notifikacije i stanje biljke."
+                        Text="{Binding Recommendation}"
+                        Style="{StaticResource BodyLabelStyle}" />
+
+                    <Label
+                        Text="{Binding DiseaseStatus}"
                         Style="{StaticResource BodyLabelStyle}" />
                 </VerticalStackLayout>
             </Border>
+
+            <Button
+                Text="Osvježi podatke"
+                Command="{Binding LoadCommand}"
+                Style="{StaticResource PrimaryButtonStyle}"
+                SemanticProperties.Description="Osvježi podatke o pametnoj saksiji"
+                SemanticProperties.Hint="Ponovo učitava senzorska očitanja, preporuke i zadnju analizu biljke" />
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
