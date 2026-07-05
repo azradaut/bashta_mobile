@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="bashta_mobile.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="SettingsPage">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="16">
+            <Label
+                Text="Bashta"
+                Style="{StaticResource PageTitleLabelStyle}" />
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="8">
+                    <Label
+                        Text="SettingsPage"
+                        Style="{StaticResource SectionTitleLabelStyle}" />
+                    <Label
+                        Text="Pametna saksija za paradajz"
+                        Style="{StaticResource BodyLabelStyle}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="8">
+                    <Label
+                        Text="Na šta obratiti pažnju-SettingsPage"
+                        Style="{StaticResource SectionTitleLabelStyle}" />
+                    <Label
+                        Text="Ovdje će biti prikazane preporuke, notifikacije i stanje biljke."
+                        Style="{StaticResource BodyLabelStyle}" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

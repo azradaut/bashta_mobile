@@ -21,6 +21,17 @@
                         Style="{StaticResource BodyLabelStyle}" />
                 </VerticalStackLayout>
             </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="8">
+                    <Label
+                        Text="Na šta obratiti pažnju"
+                        Style="{StaticResource SectionTitleLabelStyle}" />
+                    <Label
+                        Text="Ovdje će biti prikazane preporuke, notifikacije i stanje biljke."
+                        Style="{StaticResource BodyLabelStyle}" />
+                </VerticalStackLayout>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

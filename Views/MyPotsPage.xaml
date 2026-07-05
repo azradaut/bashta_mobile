@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="bashta_mobile.Views.MyPotsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Dashboard">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="16">
+            <Label
+                Text="Bashta"
+                Style="{StaticResource PageTitleLabelStyle}" />
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="8">
+                    <Label
+                        Text="MyPotsPage"
+                        Style="{StaticResource SectionTitleLabelStyle}" />
+                    <Label
+                        Text="Pametna saksija za paradajz"
+                        Style="{StaticResource BodyLabelStyle}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="8">
+                    <Label
+                        Text="Na šta obratiti pažnju - MyPotsPage"
+                        Style="{StaticResource SectionTitleLabelStyle}" />
+                    <Label
+                        Text="bla bla"
+                        Style="{StaticResource BodyLabelStyle}" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
