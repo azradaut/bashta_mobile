@@ -5,6 +5,8 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using bashta_mobile.Models;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 
 namespace bashta_mobile.Services;
 
@@ -78,5 +80,54 @@ public class ApiService : IApiService
         return await response.Content.ReadFromJsonAsync<T>(
             JsonOptions,
             cancellationToken);
+    }
+    public async Task<DiseaseDetectionResponse?> AnalyzeDiseaseAsync(
+    int plantId,
+    FileResult imageFile,
+    CancellationToken cancellationToken = default)
+    {
+        await using var imageStream = await imageFile.OpenReadAsync();
+
+        using var formData = new MultipartFormDataContent();
+
+        formData.Add(
+            new StringContent(plantId.ToString()),
+            "PlantId"
+        );
+
+        var imageContent = new StreamContent(imageStream);
+        imageContent.Headers.ContentType = new MediaTypeHeaderValue(GetContentType(imageFile.FileName));
+
+        formData.Add(
+            imageContent,
+            "Image",
+            imageFile.FileName
+        );
+
+        var response = await _httpClient.PostAsync(
+            "disease/analyze",
+            formData,
+            cancellationToken
+        );
+
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadFromJsonAsync<DiseaseDetectionResponse>(
+            JsonOptions,
+            cancellationToken
+        );
+    }
+
+    private static string GetContentType(string fileName)
+    {
+        var extension = Path.GetExtension(fileName).ToLowerInvariant();
+
+        return extension switch
+        {
+            ".jpg" or ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".webp" => "image/webp",
+            _ => "application/octet-stream"
+        };
     }
 }

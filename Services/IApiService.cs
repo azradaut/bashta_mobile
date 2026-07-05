@@ -14,4 +14,6 @@ public interface IApiService
     Task<List<RecommendationDto>> GetRecommendationsAsync(int plantId, CancellationToken cancellationToken = default);
 
     Task<DiseaseDetectionResponse?> GetLatestDiseaseDetectionAsync(int plantId, CancellationToken cancellationToken = default);
+
+    Task<DiseaseDetectionResponse?> AnalyzeDiseaseAsync(int plantId, FileResult imageFile, CancellationToken cancellationToken = default);
 }

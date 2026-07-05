@@ -27,6 +27,7 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<IApiService, ApiService>();
         builder.Services.AddTransient<DashboardViewModel>();
+        builder.Services.AddTransient<PlantScannerViewModel>();
 
 #if DEBUG
         builder.Logging.AddDebug();

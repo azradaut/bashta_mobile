@@ -3,35 +3,131 @@
     x:Class="bashta_mobile.Views.PlantScannerPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="Dashboard">
+    Title="Plant Scanner">
 
     <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="16">
+        <VerticalStackLayout Padding="24" Spacing="18">
+
             <Label
-                Text="Bashta"
-                Style="{StaticResource PageTitleLabelStyle}" />
+                Text="Plant Scanner"
+                Style="{StaticResource PageTitleLabelStyle}"
+                SemanticProperties.HeadingLevel="Level1" />
 
-            <Border Style="{StaticResource CardBorderStyle}">
-                <VerticalStackLayout Spacing="8">
-                    <Label
-                        Text="PlantScannerPage"
-                        Style="{StaticResource SectionTitleLabelStyle}" />
-                    <Label
-                        Text="Pametna saksija za paradajz"
-                        Style="{StaticResource BodyLabelStyle}" />
-                </VerticalStackLayout>
+            <Label
+                Text="{Binding PlantDisplayName}"
+                FontSize="18"
+                FontAttributes="Bold"
+                TextColor="{StaticResource EmeraldGreen}" />
+
+            <Label
+                Text="{Binding StatusMessage}"
+                Style="{StaticResource BodyLabelStyle}" />
+
+            <Border
+                IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotNullOrEmptyConverter}}"
+                Style="{StaticResource CardBorderStyle}">
+                <Label
+                    Text="{Binding ErrorMessage}"
+                    TextColor="{StaticResource ErrorColor}"
+                    Style="{StaticResource BodyLabelStyle}" />
             </Border>
 
             <Border Style="{StaticResource CardBorderStyle}">
-                <VerticalStackLayout Spacing="8">
+                <VerticalStackLayout Spacing="12">
+
                     <Label
-                        Text="Na šta obratiti pažnju - PlantScannerPage"
+                        Text="Slika lista"
                         Style="{StaticResource SectionTitleLabelStyle}" />
+
                     <Label
-                        Text="Ovdje će biti prikazane preporuke, notifikacije i stanje biljke."
+                        Text="Uslikaj ili učitaj fotografiju lista paradajza. Za bolji rezultat koristi jasnu sliku jednog lista, bez jakih sjena i zamućenja."
                         Style="{StaticResource BodyLabelStyle}" />
+
+                    <Border
+                        HeightRequest="220"
+                        BackgroundColor="{StaticResource PageBackgroundColor}"
+                        Stroke="{StaticResource BorderColor}"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 18">
+
+                        <Grid>
+                            <Label
+                                Text="Nema odabrane slike"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Center"
+                                TextColor="{StaticResource TextSecondaryColor}"
+                                IsVisible="{Binding HasSelectedImage, Converter={StaticResource InvertedBoolConverter}}" />
+
+                            <Image
+                                Source="{Binding SelectedImageSource}"
+                                Aspect="AspectFill"
+                                IsVisible="{Binding HasSelectedImage}"
+                                SemanticProperties.Description="Odabrana slika lista za analizu" />
+                        </Grid>
+                    </Border>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <Button
+                            Grid.Column="0"
+                            Text="Uslikaj"
+                            Command="{Binding TakePhotoCommand}"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            SemanticProperties.Description="Uslikaj list paradajza"
+                            SemanticProperties.Hint="Otvara kameru za fotografisanje lista" />
+
+                        <Button
+                            Grid.Column="1"
+                            Text="Učitaj"
+                            Command="{Binding PickImageCommand}"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            SemanticProperties.Description="Učitaj sliku lista iz galerije"
+                            SemanticProperties.Hint="Otvara galeriju za izbor slike lista" />
+                    </Grid>
+
+                    <Button
+                        Text="Analiziraj sliku"
+                        Command="{Binding AnalyzeCommand}"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        SemanticProperties.Description="Analiziraj zdravstveno stanje lista"
+                        SemanticProperties.Hint="Šalje sliku backend sistemu i prikazuje rezultat ML modela" />
+
+                    <ActivityIndicator
+                        IsRunning="{Binding IsBusy}"
+                        IsVisible="{Binding IsBusy}" />
+
                 </VerticalStackLayout>
             </Border>
+
+            <Border
+                IsVisible="{Binding IsResultVisible}"
+                Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="10">
+
+                    <Label
+                        Text="Rezultat analize"
+                        Style="{StaticResource SectionTitleLabelStyle}" />
+
+                    <Label
+                        Text="{Binding ResultTitle}"
+                        FontSize="18"
+                        FontAttributes="Bold"
+                        TextColor="{StaticResource TextPrimaryColor}" />
+
+                    <Label
+                        Text="{Binding ConfidenceText}"
+                        Style="{StaticResource BodyLabelStyle}" />
+
+                    <Label
+                        Text="Preporuka"
+                        Style="{StaticResource SectionTitleLabelStyle}" />
+
+                    <Label
+                        Text="{Binding Recommendation}"
+                        Style="{StaticResource BodyLabelStyle}" />
+
+                </VerticalStackLayout>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
