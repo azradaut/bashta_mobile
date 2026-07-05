@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- Brand palette -->
+    <Color x:Key="EmeraldGreen">#284139</Color>
+    <Color x:Key="Wasabi">#809076</Color>
+    <Color x:Key="CreasedKhaki">#F8D794</Color>
+    <Color x:Key="EgyptianEarth">#B86A30</Color>
+    <Color x:Key="NoirDeVigne">#111419</Color>
+
+    <!-- Semantic colors -->
+    <Color x:Key="PrimaryColor">#284139</Color>
+    <Color x:Key="SecondaryColor">#809076</Color>
+    <Color x:Key="AccentColor">#B86A30</Color>
+    <Color x:Key="WarningColor">#F8D794</Color>
+
+    <Color x:Key="PageBackgroundColor">#F7F4EA</Color>
+    <Color x:Key="CardBackgroundColor">#FFFFFF</Color>
+    <Color x:Key="DarkCardColor">#111419</Color>
+
+    <Color x:Key="TextPrimaryColor">#111419</Color>
+    <Color x:Key="TextSecondaryColor">#5F6B63</Color>
+    <Color x:Key="TextOnDarkColor">#F7F4EA</Color>
+
+    <Color x:Key="SuccessColor">#809076</Color>
+    <Color x:Key="ErrorColor">#B84A30</Color>
+    <Color x:Key="BorderColor">#D9D2BD</Color>
+
+</ResourceDictionary>

@@ -1,0 +1,66 @@
+<!--<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="bashta_mobile.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:bashta_mobile"
+    Title="bashta_mobile">
+
+    <ShellContent
+        Title="Home"
+        ContentTemplate="{DataTemplate local:MainPage}"
+        Route="MainPage" />
+
+</Shell> -->
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="bashta_mobile.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+ 
+    FlyoutBackgroundColor="{StaticResource EmeraldGreen}"
+    Shell.BackgroundColor="{StaticResource EmeraldGreen}"
+    Shell.TitleColor="{StaticResource TextOnDarkColor}"
+    Shell.ForegroundColor="{StaticResource TextOnDarkColor}">
+
+    <Shell.FlyoutHeader>
+        <Grid Padding="24" BackgroundColor="{StaticResource NoirDeVigne}">
+            <VerticalStackLayout Spacing="4">
+                <Label
+                    Text="Bashta"
+                    FontSize="30"
+                    FontAttributes="Bold"
+                    TextColor="{StaticResource CreasedKhaki}" />
+                <Label
+                    Text="Smart urban gardening"
+                    FontSize="13"
+                    TextColor="{StaticResource TextOnDarkColor}" />
+            </VerticalStackLayout>
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <FlyoutItem Title="Dashboard" Route="dashboard">
+        <ShellContent
+            Title="Dashboard"
+            ContentTemplate="{DataTemplate views:DashboardPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Moje saksije" Route="my-pots">
+        <ShellContent
+            Title="Moje saksije"
+            ContentTemplate="{DataTemplate views:MyPotsPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Plant Scanner" Route="plant-scanner">
+        <ShellContent
+            Title="Plant Scanner"
+            ContentTemplate="{DataTemplate views:PlantScannerPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Postavke" Route="settings">
+        <ShellContent
+            Title="Postavke"
+            ContentTemplate="{DataTemplate views:SettingsPage}" />
+    </FlyoutItem>
+
+</Shell>
