@@ -195,6 +195,32 @@ public class ApiService : IApiService
 
         response.EnsureSuccessStatusCode();
     }
+
+    public async Task<WateringStatusDto?> GetWateringStatusAsync(
+    int plantPotId,
+    CancellationToken cancellationToken = default)
+    {
+        return await GetOrNullAsync<WateringStatusDto>(
+            $"watering/{plantPotId}/status",
+            cancellationToken);
+    }
+
+    public async Task<WateringEventDto?> ManualWaterAsync(
+        ManualWateringRequestDto request,
+        CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.PostAsJsonAsync(
+            "watering/manual",
+            request,
+            JsonOptions,
+            cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadFromJsonAsync<WateringEventDto>(
+            JsonOptions,
+            cancellationToken);
+    }
     private static string GetContentType(string fileName)
     {
         var extension = Path.GetExtension(fileName).ToLowerInvariant();

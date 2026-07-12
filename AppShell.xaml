@@ -38,6 +38,12 @@
             ContentTemplate="{DataTemplate views:MyPotsPage}" />
     </FlyoutItem>
 
+    <FlyoutItem Title="Zalijevanje" Route="watering">
+        <ShellContent
+        Title="Zalijevanje"
+        ContentTemplate="{DataTemplate views:WateringPage}" />
+    </FlyoutItem>
+
     <FlyoutItem Title="Plant Scanner" Route="plant-scanner">
         <ShellContent
             Title="Plant Scanner"

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="bashta_mobile.Views.WateringPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Zalijevanje">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="18">
+
+            <Label
+                Text="Zalijevanje"
+                Style="{StaticResource PageTitleLabelStyle}"
+                SemanticProperties.HeadingLevel="Level1" />
+
+            <Label
+                Text="{Binding PlantName}"
+                FontSize="18"
+                FontAttributes="Bold"
+                TextColor="{StaticResource EmeraldGreen}" />
+
+            <ActivityIndicator
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}" />
+
+            <Border
+                IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotNullOrEmptyConverter}}"
+                Style="{StaticResource CardBorderStyle}">
+                <Label
+                    Text="{Binding ErrorMessage}"
+                    TextColor="{StaticResource ErrorColor}"
+                    Style="{StaticResource BodyLabelStyle}" />
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="12">
+
+                    <Label
+                        Text="Trenutno stanje"
+                        Style="{StaticResource SectionTitleLabelStyle}" />
+
+                    <Grid
+                        ColumnDefinitions="*,*"
+                        RowDefinitions="Auto,Auto"
+                        ColumnSpacing="12"
+                        RowSpacing="12">
+
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="0">
+                            <Label Text="Trenutna vlažnost" Style="{StaticResource BodyLabelStyle}" />
+                            <Label Text="{Binding CurrentMoisture}" FontSize="24" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="1">
+                            <Label Text="Preporučeni opseg" Style="{StaticResource BodyLabelStyle}" />
+                            <Label Text="{Binding RecommendedMoisture}" FontSize="24" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="0">
+                            <Label Text="Zadnje zalijevanje" Style="{StaticResource BodyLabelStyle}" />
+                            <Label Text="{Binding LastWatered}" Style="{StaticResource BodyLabelStyle}" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="1">
+                            <Label Text="Dnevni limit" Style="{StaticResource BodyLabelStyle}" />
+                            <Label Text="{Binding WateringCount}" Style="{StaticResource BodyLabelStyle}" />
+                        </VerticalStackLayout>
+
+                    </Grid>
+
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="10">
+
+                    <Label
+                        Text="Preporuka"
+                        Style="{StaticResource SectionTitleLabelStyle}" />
+
+                    <Label
+                        Text="{Binding StatusMessage}"
+                        Style="{StaticResource BodyLabelStyle}" />
+
+                    <Label
+                        Text="{Binding WarningMessage}"
+                        IsVisible="{Binding WarningMessage, Converter={StaticResource StringNotNullOrEmptyConverter}}"
+                        TextColor="{StaticResource EgyptianEarth}"
+                        Style="{StaticResource BodyLabelStyle}" />
+
+                    <Button
+                        Text="Zalij sada"
+                        Command="{Binding ManualWaterCommand}"
+                        IsEnabled="{Binding CanWater}"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        SemanticProperties.Description="Ručno evidentiraj zalijevanje biljke"
+                        SemanticProperties.Hint="Zalijevanje je ograničeno na najviše dva puta u 24 sata" />
+
+                    <Button
+                        Text="Osvježi status"
+                        Command="{Binding LoadCommand}"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        SemanticProperties.Description="Osvježi status zalijevanja" />
+
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="10">
+
+                    <Label
+                        Text="Historija zalijevanja"
+                        Style="{StaticResource SectionTitleLabelStyle}" />
+
+                    <CollectionView
+                        ItemsSource="{Binding RecentEvents}"
+                        SelectionMode="None">
+
+                        <CollectionView.EmptyView>
+                            <Label
+                                Text="Nema evidentiranih zalijevanja."
+                                Style="{StaticResource BodyLabelStyle}" />
+                        </CollectionView.EmptyView>
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <VerticalStackLayout Padding="0,8" Spacing="3">
+                                    <Label
+                                        Text="{Binding Title}"
+                                        FontAttributes="Bold"
+                                        TextColor="{StaticResource TextPrimaryColor}" />
+
+                                    <Label
+                                        Text="{Binding Details}"
+                                        Style="{StaticResource BodyLabelStyle}" />
+
+                                    <Label
+                                        Text="{Binding CreatedAtText}"
+                                        FontSize="12"
+                                        TextColor="{StaticResource TextSecondaryColor}" />
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+
+                    </CollectionView>
+
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

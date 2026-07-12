@@ -49,4 +49,12 @@ public interface IApiService
     Task RemovePlantAsync(
         int plantId,
         CancellationToken cancellationToken = default);
+
+    Task<WateringStatusDto?> GetWateringStatusAsync(
+    int plantPotId,
+    CancellationToken cancellationToken = default);
+
+    Task<WateringEventDto?> ManualWaterAsync(
+        ManualWateringRequestDto request,
+        CancellationToken cancellationToken = default);
 }
