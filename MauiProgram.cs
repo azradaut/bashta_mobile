@@ -29,6 +29,9 @@ public static class MauiProgram
         builder.Services.AddTransient<DashboardViewModel>();
         builder.Services.AddTransient<PlantScannerViewModel>();
         builder.Services.AddTransient<MyPotsViewModel>();
+        builder.Services.AddTransient<SettingsViewModel>();
+        builder.Services.AddTransient<AddPotViewModel>();
+        builder.Services.AddTransient<EditPotViewModel>();
 
 #if DEBUG
         builder.Logging.AddDebug();

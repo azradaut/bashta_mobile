@@ -31,6 +31,7 @@
             </Border>
 
             <CollectionView
+                x:Name="PotsCollectionView"
                 ItemsSource="{Binding Pots}"
                 SelectionMode="None">
 
@@ -40,6 +41,7 @@
                             <Label
                                 Text="Nema dodanih saksija"
                                 Style="{StaticResource SectionTitleLabelStyle}" />
+
                             <Label
                                 Text="Dodavanje novih saksija predviđeno je kao dio skalabilnosti sistema."
                                 Style="{StaticResource BodyLabelStyle}" />
@@ -121,6 +123,33 @@
 
                                 </Grid>
 
+                                <Grid
+                                    ColumnDefinitions="*,*"
+                                    ColumnSpacing="12"
+                                    Margin="0,12,0,0">
+
+                                    <Button
+                                        Grid.Column="0"
+                                        Text="Uredi"
+                                        Command="{Binding Source={x:Reference PotsCollectionView}, Path=BindingContext.EditPotCommand}"
+                                        CommandParameter="{Binding .}"
+                                        Style="{StaticResource SecondaryButtonStyle}"
+                                        SemanticProperties.Description="Uredi podatke o saksiji" />
+
+                                    <Button
+                                        Grid.Column="1"
+                                        Text="Obriši"
+                                        Command="{Binding Source={x:Reference PotsCollectionView}, Path=BindingContext.DeletePotCommand}"
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="{StaticResource EgyptianEarth}"
+                                        TextColor="{StaticResource TextOnDarkColor}"
+                                        CornerRadius="18"
+                                        HeightRequest="52"
+                                        FontAttributes="Bold"
+                                        SemanticProperties.Description="Obriši saksiju" />
+
+                                </Grid>
+
                             </VerticalStackLayout>
                         </Border>
                     </DataTemplate>
@@ -132,7 +161,7 @@
                 Command="{Binding AddPotCommand}"
                 Style="{StaticResource SecondaryButtonStyle}"
                 SemanticProperties.Description="Dodaj novu pametnu saksiju"
-                SemanticProperties.Hint="Otvara formu za dodavanje nove saksije u budućoj verziji aplikacije" />
+                SemanticProperties.Hint="Otvara formu za dodavanje nove saksije" />
 
             <Button
                 Text="Osvježi listu"

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
-    x:Class="bashta_mobile.Views.AddPotPage"
+    x:Class="bashta_mobile.Views.EditPotPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="Dodaj saksiju">
+    Title="Uredi saksiju">
 
     <ScrollView>
         <VerticalStackLayout Padding="24" Spacing="18">
 
             <Label
-                Text="Dodaj novu saksiju"
+                Text="Uredi saksiju"
                 Style="{StaticResource PageTitleLabelStyle}"
                 SemanticProperties.HeadingLevel="Level1" />
 
@@ -30,12 +30,10 @@
                 <VerticalStackLayout Spacing="14">
 
                     <Label
-                        Text="Osnovni podaci"
+                        Text="Podaci o saksiji"
                         Style="{StaticResource SectionTitleLabelStyle}" />
 
-                    <Label
-                        Text="Naziv saksije"
-                        Style="{StaticResource BodyLabelStyle}" />
+                    <Label Text="Naziv saksije" Style="{StaticResource BodyLabelStyle}" />
 
                     <Entry
                         Text="{Binding Name}"
@@ -43,9 +41,7 @@
                         ClearButtonVisibility="WhileEditing"
                         SemanticProperties.Description="Naziv pametne saksije" />
 
-                    <Label
-                        Text="Lokacija"
-                        Style="{StaticResource BodyLabelStyle}" />
+                    <Label Text="Lokacija" Style="{StaticResource BodyLabelStyle}" />
 
                     <Entry
                         Text="{Binding Location}"
@@ -53,9 +49,7 @@
                         ClearButtonVisibility="WhileEditing"
                         SemanticProperties.Description="Lokacija saksije" />
 
-                    <Label
-                        Text="MAC adresa uređaja"
-                        Style="{StaticResource BodyLabelStyle}" />
+                    <Label Text="MAC adresa uređaja" Style="{StaticResource BodyLabelStyle}" />
 
                     <Entry
                         Text="{Binding MacAddress}"
@@ -64,9 +58,7 @@
                         Keyboard="Text"
                         SemanticProperties.Description="MAC adresa IoT uređaja" />
 
-                    <Label
-                        Text="Firmware verzija"
-                        Style="{StaticResource BodyLabelStyle}" />
+                    <Label Text="Firmware verzija" Style="{StaticResource BodyLabelStyle}" />
 
                     <Entry
                         Text="{Binding FirmwareVersion}"
@@ -102,16 +94,16 @@
                 IsVisible="{Binding IsBusy}" />
 
             <Button
-                Text="Sačuvaj saksiju"
+                Text="Sačuvaj promjene"
                 Command="{Binding SaveCommand}"
                 Style="{StaticResource PrimaryButtonStyle}"
-                SemanticProperties.Description="Sačuvaj novu pametnu saksiju" />
+                SemanticProperties.Description="Sačuvaj izmjene pametne saksije" />
 
             <Button
                 Text="Odustani"
                 Command="{Binding CancelCommand}"
                 Style="{StaticResource SecondaryButtonStyle}"
-                SemanticProperties.Description="Odustani od dodavanja saksije" />
+                SemanticProperties.Description="Odustani od uređivanja saksije" />
 
         </VerticalStackLayout>
     </ScrollView>

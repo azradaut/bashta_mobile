@@ -1,10 +1,14 @@
-﻿namespace bashta_mobile
+﻿using bashta_mobile.Views;
+
+namespace bashta_mobile;
+
+public partial class AppShell : Shell
 {
-    public partial class AppShell : Shell
+    public AppShell()
     {
-        public AppShell()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+
+        Routing.RegisterRoute("add-pot", typeof(AddPotPage));
+        Routing.RegisterRoute("edit-pot", typeof(EditPotPage));
     }
 }

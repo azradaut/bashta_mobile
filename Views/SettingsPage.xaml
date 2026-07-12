@@ -3,35 +3,149 @@
     x:Class="bashta_mobile.Views.SettingsPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="SettingsPage">
+    Title="Postavke">
 
     <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="16">
+        <VerticalStackLayout Padding="24" Spacing="18">
+
             <Label
-                Text="Bashta"
-                Style="{StaticResource PageTitleLabelStyle}" />
+                Text="Postavke"
+                Style="{StaticResource PageTitleLabelStyle}"
+                SemanticProperties.HeadingLevel="Level1" />
+
+            <Label
+                Text="{Binding StatusMessage}"
+                Style="{StaticResource BodyLabelStyle}" />
 
             <Border Style="{StaticResource CardBorderStyle}">
-                <VerticalStackLayout Spacing="8">
+                <VerticalStackLayout Spacing="12">
+
                     <Label
-                        Text="SettingsPage"
+                        Text="Jezik aplikacije"
                         Style="{StaticResource SectionTitleLabelStyle}" />
+
                     <Label
-                        Text="Pametna saksija za paradajz"
+                        Text="Aplikacija je projektovana da podrži bosanski i engleski jezik. Za MVP verziju jezik se čuva kao korisnička postavka, dok će se potpuna lokalizacija primijeniti kroz resursne fajlove."
                         Style="{StaticResource BodyLabelStyle}" />
+
+                    <Label
+                        Text="{Binding SelectedLanguage, StringFormat='Trenutni jezik: {0}'}"
+                        FontAttributes="Bold"
+                        TextColor="{StaticResource TextPrimaryColor}" />
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <Button
+                            Grid.Column="0"
+                            Text="Bosanski"
+                            Command="{Binding SetBosnianCommand}"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            SemanticProperties.Description="Postavi jezik aplikacije na bosanski" />
+
+                        <Button
+                            Grid.Column="1"
+                            Text="English"
+                            Command="{Binding SetEnglishCommand}"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            SemanticProperties.Description="Set application language to English" />
+                    </Grid>
+
                 </VerticalStackLayout>
             </Border>
 
             <Border Style="{StaticResource CardBorderStyle}">
-                <VerticalStackLayout Spacing="8">
+                <VerticalStackLayout Spacing="10">
+
                     <Label
-                        Text="Na šta obratiti pažnju-SettingsPage"
+                        Text="Pristupačnost"
                         Style="{StaticResource SectionTitleLabelStyle}" />
+
                     <Label
-                        Text="Ovdje će biti prikazane preporuke, notifikacije i stanje biljke."
+                        Text="Interfejs koristi jasne tekstualne oznake, veće dodirne površine, kontrastne boje i semantic opise za ključne akcije. Status biljke se ne prikazuje samo bojom, nego i tekstualnom porukom, što olakšava korištenje osobama sa smanjenim vidom."
                         Style="{StaticResource BodyLabelStyle}" />
+
+                    <Label
+                        Text="Primjeri: Osvježi podatke, Učitaj sliku, Analiziraj sliku i status bolesti imaju dodatne opise za screen reader."
+                        Style="{StaticResource BodyLabelStyle}" />
+
                 </VerticalStackLayout>
             </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="10">
+
+                    <Label
+                        Text="O aplikaciji"
+                        Style="{StaticResource SectionTitleLabelStyle}" />
+
+                    <Grid
+                        ColumnDefinitions="Auto,*"
+                        RowDefinitions="Auto,Auto,Auto"
+                        ColumnSpacing="12"
+                        RowSpacing="8">
+
+                        <Label
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Text="Naziv:"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource TextPrimaryColor}" />
+
+                        <Label
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Text="Bashta Mobile"
+                            Style="{StaticResource BodyLabelStyle}" />
+
+                        <Label
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Text="Verzija:"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource TextPrimaryColor}" />
+
+                        <Label
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Text="{Binding AppVersion}"
+                            Style="{StaticResource BodyLabelStyle}" />
+
+                        <Label
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            Text="API:"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource TextPrimaryColor}" />
+
+                        <Label
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            Text="{Binding BackendUrl}"
+                            Style="{StaticResource BodyLabelStyle}"
+                            LineBreakMode="WordWrap" />
+
+                    </Grid>
+
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="10">
+
+                    <Label
+                        Text="MVP obim"
+                        Style="{StaticResource SectionTitleLabelStyle}" />
+
+                    <Label
+                        Text="Ova verzija aplikacije prikazuje funkcionalni prototip sistema za jednu ili više testnih saksija, očitanje senzorskih podataka, preporuke za održavanje biljke i analizu bolesti lista paradajza putem ML modela."
+                        Style="{StaticResource BodyLabelStyle}" />
+
+                    <Label
+                        Text="Napredne funkcionalnosti kao što su registracija korisnika, produkcijska sigurnost, push notifikacije i podrška za više biljnih kultura predviđene su za buduće faze razvoja."
+                        Style="{StaticResource BodyLabelStyle}" />
+
+                </VerticalStackLayout>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

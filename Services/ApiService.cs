@@ -117,7 +117,84 @@ public class ApiService : IApiService
             cancellationToken
         );
     }
+    public async Task<PlantPotDto?> CreatePlantPotAsync(
+    int userId,
+    CreatePlantPotRequest request,
+    CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.PostAsJsonAsync(
+            $"plantpot?userId={userId}",
+            request,
+            JsonOptions,
+            cancellationToken);
 
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadFromJsonAsync<PlantPotDto>(
+            JsonOptions,
+            cancellationToken);
+    }
+
+    public async Task UpdatePlantPotAsync(
+    int plantPotId,
+    CreatePlantPotRequest request,
+    CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.PutAsJsonAsync(
+            $"plantpot/{plantPotId}",
+            request,
+            JsonOptions,
+            cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task DeletePlantPotAsync(
+        int plantPotId,
+        CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.DeleteAsync(
+            $"plantpot/{plantPotId}",
+            cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task<List<PlantTypeDto>> GetPlantTypesAsync(
+    CancellationToken cancellationToken = default)
+    {
+        var result = await _httpClient.GetFromJsonAsync<List<PlantTypeDto>>(
+            "plant/types",
+            JsonOptions,
+            cancellationToken);
+
+        return result ?? [];
+    }
+
+    public async Task CreatePlantAsync(
+        CreatePlantRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.PostAsJsonAsync(
+            "plant",
+            request,
+            JsonOptions,
+            cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task RemovePlantAsync(
+        int plantId,
+        CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.PatchAsync(
+            $"plant/{plantId}/remove",
+            content: null,
+            cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+    }
     private static string GetContentType(string fileName)
     {
         var extension = Path.GetExtension(fileName).ToLowerInvariant();

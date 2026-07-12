@@ -2,10 +2,10 @@
 
 namespace bashta_mobile.Models;
 
-public class PlantSummaryDto
+public class CreatePlantRequest
 {
-    [JsonPropertyName("id")]
-    public int Id { get; set; }
+    [JsonPropertyName("potId")]
+    public int PotId { get; set; }
 
     [JsonPropertyName("plantTypeId")]
     public int PlantTypeId { get; set; }
@@ -13,9 +13,9 @@ public class PlantSummaryDto
     [JsonPropertyName("nickname")]
     public string? Nickname { get; set; }
 
-    [JsonPropertyName("plantTypeName")]
-    public string? PlantTypeName { get; set; }
-
     [JsonPropertyName("plantedAt")]
-    public DateTime? PlantedAt { get; set; }
+    public DateOnly PlantedAt { get; set; } = DateOnly.FromDateTime(DateTime.Today);
+
+    [JsonPropertyName("notes")]
+    public string? Notes { get; set; }
 }
