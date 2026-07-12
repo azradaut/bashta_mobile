@@ -12,6 +12,23 @@
                 Text="Zalijevanje"
                 Style="{StaticResource PageTitleLabelStyle}"
                 SemanticProperties.HeadingLevel="Level1" />
+            
+            <Border Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="10">
+
+                    <Label
+            Text="Odaberi saksiju"
+            Style="{StaticResource SectionTitleLabelStyle}" />
+
+                    <Picker
+            ItemsSource="{Binding Pots}"
+            SelectedItem="{Binding SelectedPot}"
+            ItemDisplayBinding="{Binding DisplayName}"
+            Title="Odaberi saksiju za zalijevanje"
+            SemanticProperties.Description="Odabir saksije za zalijevanje" />
+
+                </VerticalStackLayout>
+            </Border>
 
             <Label
                 Text="{Binding PlantName}"
@@ -22,6 +39,7 @@
             <ActivityIndicator
                 IsRunning="{Binding IsBusy}"
                 IsVisible="{Binding IsBusy}" />
+            
 
             <Border
                 IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotNullOrEmptyConverter}}"
