@@ -46,6 +46,9 @@
 	  <MauiXaml Update="Views\EditPotPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\PotDetailsPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\WateringPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

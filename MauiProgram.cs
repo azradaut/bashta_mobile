@@ -33,6 +33,7 @@ public static class MauiProgram
         builder.Services.AddTransient<AddPotViewModel>();
         builder.Services.AddTransient<EditPotViewModel>();
         builder.Services.AddTransient<WateringViewModel>();
+        builder.Services.AddTransient<PotDetailsViewModel>();
 
 #if DEBUG
         builder.Logging.AddDebug();

@@ -5,129 +5,116 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     Title="Plant Scanner">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="24" Spacing="18">
+	<ScrollView>
+		<VerticalStackLayout Padding="24" Spacing="18">
 
-            <Label
+			<Label
                 Text="Plant Scanner"
                 Style="{StaticResource PageTitleLabelStyle}"
                 SemanticProperties.HeadingLevel="Level1" />
 
-            <Label
-                Text="{Binding PlantDisplayName}"
-                FontSize="18"
-                FontAttributes="Bold"
-                TextColor="{StaticResource EmeraldGreen}" />
-
-            <Label
+			<Label
                 Text="{Binding StatusMessage}"
                 Style="{StaticResource BodyLabelStyle}" />
 
-            <Border
+			<Border
                 IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotNullOrEmptyConverter}}"
                 Style="{StaticResource CardBorderStyle}">
-                <Label
+				<Label
                     Text="{Binding ErrorMessage}"
                     TextColor="{StaticResource ErrorColor}"
                     Style="{StaticResource BodyLabelStyle}" />
-            </Border>
+			</Border>
 
-            <Border Style="{StaticResource CardBorderStyle}">
-                <VerticalStackLayout Spacing="12">
+			<Border Style="{StaticResource CardBorderStyle}">
+				<VerticalStackLayout Spacing="12">
 
-                    <Label
-                        Text="Slika lista"
+					<Label
+                        Text="Odabir biljke"
                         Style="{StaticResource SectionTitleLabelStyle}" />
 
-                    <Label
-                        Text="Uslikaj ili učitaj fotografiju lista paradajza. Za bolji rezultat koristi jasnu sliku jednog lista, bez jakih sjena i zamućenja."
+					<Label
+                        Text="Saksija"
                         Style="{StaticResource BodyLabelStyle}" />
 
-                    <Border
-                        HeightRequest="220"
-                        BackgroundColor="{StaticResource PageBackgroundColor}"
-                        Stroke="{StaticResource BorderColor}"
-                        StrokeThickness="1"
-                        StrokeShape="RoundRectangle 18">
+					<Picker
+                        ItemsSource="{Binding Pots}"
+                        SelectedItem="{Binding SelectedPot}"
+                        ItemDisplayBinding="{Binding DisplayName}"
+                        Title="Odaberi saksiju"
+                        SemanticProperties.Description="Odabir saksije za analizu biljke" />
 
-                        <Grid>
-                            <Label
-                                Text="Nema odabrane slike"
-                                HorizontalOptions="Center"
-                                VerticalOptions="Center"
-                                TextColor="{StaticResource TextSecondaryColor}"
-                                IsVisible="{Binding HasSelectedImage, Converter={StaticResource InvertedBoolConverter}}" />
+					<Label
+                        Text="Aktivna biljka"
+                        Style="{StaticResource BodyLabelStyle}" />
 
-                            <Image
-                                Source="{Binding SelectedImageSource}"
-                                Aspect="AspectFill"
-                                IsVisible="{Binding HasSelectedImage}"
-                                SemanticProperties.Description="Odabrana slika lista za analizu" />
-                        </Grid>
-                    </Border>
+					<Label
+                        Text="{Binding SelectedPlantName}"
+                        FontSize="18"
+                        FontAttributes="Bold"
+                        TextColor="{StaticResource EmeraldGreen}" />
 
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                        <Button
-                            Grid.Column="0"
-                            Text="Uslikaj"
-                            Command="{Binding TakePhotoCommand}"
-                            Style="{StaticResource SecondaryButtonStyle}"
-                            SemanticProperties.Description="Uslikaj list paradajza"
-                            SemanticProperties.Hint="Otvara kameru za fotografisanje lista" />
+				</VerticalStackLayout>
+			</Border>
 
-                        <Button
-                            Grid.Column="1"
-                            Text="Učitaj"
-                            Command="{Binding PickImageCommand}"
-                            Style="{StaticResource SecondaryButtonStyle}"
-                            SemanticProperties.Description="Učitaj sliku lista iz galerije"
-                            SemanticProperties.Hint="Otvara galeriju za izbor slike lista" />
-                    </Grid>
+			<Border Style="{StaticResource CardBorderStyle}">
+				<VerticalStackLayout Spacing="14">
 
-                    <Button
-                        Text="Analiziraj sliku"
+					<Label
+                        Text="Fotografija lista"
+                        Style="{StaticResource SectionTitleLabelStyle}" />
+
+					<Button
+                        Text="Odaberi fotografiju"
+                        Command="{Binding PickImageCommand}"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        SemanticProperties.Description="Odaberi fotografiju lista za analizu" />
+
+					<Image
+                        Source="{Binding PreviewImage}"
+                        HeightRequest="240"
+                        Aspect="AspectFit"
+                        BackgroundColor="{StaticResource CreasedKhaki}" />
+
+					<Button
+                        Text="Analiziraj"
                         Command="{Binding AnalyzeCommand}"
                         Style="{StaticResource PrimaryButtonStyle}"
-                        SemanticProperties.Description="Analiziraj zdravstveno stanje lista"
-                        SemanticProperties.Hint="Šalje sliku backend sistemu i prikazuje rezultat ML modela" />
+                        SemanticProperties.Description="Pokreni ML analizu zdravlja biljke" />
 
-                    <ActivityIndicator
+					<ActivityIndicator
                         IsRunning="{Binding IsBusy}"
                         IsVisible="{Binding IsBusy}" />
 
-                </VerticalStackLayout>
-            </Border>
+				</VerticalStackLayout>
+			</Border>
 
-            <Border
-                IsVisible="{Binding IsResultVisible}"
+			<Border
+                IsVisible="{Binding HasResult}"
                 Style="{StaticResource CardBorderStyle}">
-                <VerticalStackLayout Spacing="10">
+				<VerticalStackLayout Spacing="10">
 
-                    <Label
+					<Label
                         Text="Rezultat analize"
                         Style="{StaticResource SectionTitleLabelStyle}" />
 
-                    <Label
+					<Label
                         Text="{Binding ResultTitle}"
                         FontSize="18"
                         FontAttributes="Bold"
-                        TextColor="{StaticResource TextPrimaryColor}" />
+                        TextColor="{StaticResource EmeraldGreen}" />
 
-                    <Label
-                        Text="{Binding ConfidenceText}"
+					<Label
+                        Text="{Binding ResultConfidence}"
                         Style="{StaticResource BodyLabelStyle}" />
 
-                    <Label
-                        Text="Preporuka"
-                        Style="{StaticResource SectionTitleLabelStyle}" />
-
-                    <Label
-                        Text="{Binding Recommendation}"
+					<Label
+                        Text="{Binding ResultRecommendation}"
                         Style="{StaticResource BodyLabelStyle}" />
 
-                </VerticalStackLayout>
-            </Border>
+				</VerticalStackLayout>
+			</Border>
 
-        </VerticalStackLayout>
-    </ScrollView>
+		</VerticalStackLayout>
+	</ScrollView>
 </ContentPage>

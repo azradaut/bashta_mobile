@@ -9,14 +9,15 @@ public class WateringViewModel : BaseViewModel
 {
     private readonly IApiService _apiService;
 
-    private int? _activePotId;
+    private PlantPotOptionViewModel? _selectedPot;
+    private bool _isLoadingPots;
 
     private string _plantName = "Nema aktivne biljke";
     private string _currentMoisture = "--";
     private string _recommendedMoisture = "--";
     private string _lastWatered = "Nema evidentiranog zalijevanja";
     private string _wateringCount = "--";
-    private string _statusMessage = "Učitavanje statusa zalijevanja...";
+    private string _statusMessage = "Odaberi saksiju za prikaz statusa zalijevanja.";
     private string? _warningMessage;
     private bool _canWater;
     private int _recommendedAmountMl = 200;
@@ -25,16 +26,37 @@ public class WateringViewModel : BaseViewModel
     {
         _apiService = apiService;
 
+        Pots = new ObservableCollection<PlantPotOptionViewModel>();
         RecentEvents = new ObservableCollection<WateringHistoryItemViewModel>();
 
         LoadCommand = new Command(async () => await LoadAsync());
         ManualWaterCommand = new Command(async () => await ManualWaterAsync());
     }
 
+    public ObservableCollection<PlantPotOptionViewModel> Pots { get; }
+
     public ObservableCollection<WateringHistoryItemViewModel> RecentEvents { get; }
 
     public ICommand LoadCommand { get; }
+
     public ICommand ManualWaterCommand { get; }
+
+    public PlantPotOptionViewModel? SelectedPot
+    {
+        get => _selectedPot;
+        set
+        {
+            if (_selectedPot == value)
+                return;
+
+            SetProperty(ref _selectedPot, value);
+
+            if (!_isLoadingPots && value is not null)
+            {
+                _ = LoadStatusForSelectedPotAsync();
+            }
+        }
+    }
 
     public string PlantName
     {
@@ -94,30 +116,78 @@ public class WateringViewModel : BaseViewModel
             IsBusy = true;
             ErrorMessage = null;
             WarningMessage = null;
+            _isLoadingPots = true;
 
             var pots = await _apiService.GetPlantPotsByUserAsync(userId: 1);
-            var pot = pots.FirstOrDefault();
 
-            if (pot is null)
+            var previouslySelectedPotId = SelectedPot?.Id;
+
+            Pots.Clear();
+
+            foreach (var pot in pots)
             {
-                _activePotId = null;
-                CanWater = false;
-                StatusMessage = "Nije pronađena nijedna saksija.";
+                Pots.Add(new PlantPotOptionViewModel
+                {
+                    Id = pot.Id,
+                    Name = pot.Name ?? $"Saksija #{pot.Id}",
+                    Location = pot.Location,
+                    DisplayName = string.IsNullOrWhiteSpace(pot.Location)
+                        ? pot.Name ?? $"Saksija #{pot.Id}"
+                        : $"{pot.Name} - {pot.Location}"
+                });
+            }
+
+            if (Pots.Count == 0)
+            {
+                ClearStatus("Nije pronađena nijedna saksija.");
                 return;
             }
 
-            _activePotId = pot.Id;
+            SelectedPot =
+                Pots.FirstOrDefault(p => p.Id == previouslySelectedPotId)
+                ?? Pots.FirstOrDefault();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Greška pri učitavanju saksija: {ex.Message}";
+            ClearStatus("Nije moguće učitati saksije.");
+        }
+        finally
+        {
+            _isLoadingPots = false;
+            IsBusy = false;
+        }
 
-            var status = await _apiService.GetWateringStatusAsync(pot.Id);
+        await LoadStatusForSelectedPotAsync();
+    }
+
+    private async Task LoadStatusForSelectedPotAsync()
+    {
+        if (SelectedPot is null)
+        {
+            ClearStatus("Odaberi saksiju za prikaz statusa zalijevanja.");
+            return;
+        }
+
+        if (IsBusy)
+            return;
+
+        try
+        {
+            IsBusy = true;
+            ErrorMessage = null;
+            WarningMessage = null;
+
+            var status = await _apiService.GetWateringStatusAsync(SelectedPot.Id);
 
             if (status is null)
             {
-                CanWater = false;
-                StatusMessage = "Nije moguće učitati status zalijevanja.";
+                ClearStatus("Nije moguće učitati status zalijevanja.");
                 return;
             }
 
             PlantName = status.PlantName ?? "Nema aktivne biljke";
+
             CurrentMoisture = status.CurrentSoilMoisture is null
                 ? "--"
                 : $"{status.CurrentSoilMoisture:0.#}%";
@@ -177,15 +247,15 @@ public class WateringViewModel : BaseViewModel
         if (IsBusy)
             return;
 
-        if (_activePotId is null)
+        if (SelectedPot is null)
         {
-            ErrorMessage = "Nije pronađena aktivna saksija.";
+            ErrorMessage = "Odaberi saksiju koju želiš zaliti.";
             return;
         }
 
         var confirmed = await Shell.Current.DisplayAlert(
             "Ručno zalijevanje",
-            $"Evidentirati zalijevanje od {_recommendedAmountMl} ml?",
+            $"Evidentirati zalijevanje saksije \"{SelectedPot.Name}\" sa {_recommendedAmountMl} ml?",
             "Zalij",
             "Odustani");
 
@@ -199,7 +269,7 @@ public class WateringViewModel : BaseViewModel
 
             await _apiService.ManualWaterAsync(new ManualWateringRequestDto
             {
-                PotId = _activePotId.Value,
+                PotId = SelectedPot.Id,
                 DurationSec = 10,
                 AmountMl = _recommendedAmountMl
             });
@@ -208,10 +278,6 @@ public class WateringViewModel : BaseViewModel
                 "Uspješno",
                 "Zalijevanje je evidentirano.",
                 "U redu");
-
-            IsBusy = false;
-
-            await LoadAsync();
         }
         catch (Exception ex)
         {
@@ -221,6 +287,21 @@ public class WateringViewModel : BaseViewModel
         {
             IsBusy = false;
         }
+
+        await LoadStatusForSelectedPotAsync();
+    }
+
+    private void ClearStatus(string message)
+    {
+        PlantName = "Nema aktivne biljke";
+        CurrentMoisture = "--";
+        RecommendedMoisture = "--";
+        LastWatered = "Nema evidentiranog zalijevanja";
+        WateringCount = "--";
+        StatusMessage = message;
+        WarningMessage = null;
+        CanWater = false;
+        RecentEvents.Clear();
     }
 
     private static string BuildHistoryDetails(WateringEventDto item)
@@ -240,9 +321,22 @@ public class WateringViewModel : BaseViewModel
     }
 }
 
+public class PlantPotOptionViewModel
+{
+    public int Id { get; set; }
+
+    public string Name { get; set; } = string.Empty;
+
+    public string? Location { get; set; }
+
+    public string DisplayName { get; set; } = string.Empty;
+}
+
 public class WateringHistoryItemViewModel
 {
     public string Title { get; set; } = string.Empty;
+
     public string Details { get; set; } = string.Empty;
+
     public string CreatedAtText { get; set; } = string.Empty;
 }

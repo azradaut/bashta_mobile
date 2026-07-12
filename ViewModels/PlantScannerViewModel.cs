@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.Collections.ObjectModel;
+using System.Windows.Input;
 using bashta_mobile.Models;
 using bashta_mobile.Services;
 
@@ -8,37 +9,74 @@ public class PlantScannerViewModel : BaseViewModel
 {
     private readonly IApiService _apiService;
 
-    private FileResult? _selectedImageFile;
-    private int? _activePlantId;
+    private FileResult? _selectedImage;
+    private ImageSource? _previewImage;
+    private DiseaseDetectionResponse? _result;
 
-    private string _plantDisplayName = "Cherry paradajz";
-    private string _statusMessage = "Odaberi ili uslikaj list paradajza za analizu.";
-    private string _resultTitle = string.Empty;
-    private string _confidenceText = string.Empty;
-    private string _recommendation = string.Empty;
-    private ImageSource? _selectedImageSource;
-    private bool _hasSelectedImage;
-    private bool _isResultVisible;
+    private ScannerPotOptionViewModel? _selectedPot;
+    private int? _selectedPlantId;
+
+    private string _selectedPlantName = "Nije odabrana biljka";
+    private string _statusMessage = "Odaberi saksiju i fotografiju lista za analizu.";
+    private bool _isLoadingPots;
 
     public PlantScannerViewModel(IApiService apiService)
     {
         _apiService = apiService;
 
+        Pots = new ObservableCollection<ScannerPotOptionViewModel>();
+
         LoadCommand = new Command(async () => await LoadAsync());
         PickImageCommand = new Command(async () => await PickImageAsync());
-        TakePhotoCommand = new Command(async () => await TakePhotoAsync());
         AnalyzeCommand = new Command(async () => await AnalyzeAsync());
     }
 
+    public ObservableCollection<ScannerPotOptionViewModel> Pots { get; }
+
     public ICommand LoadCommand { get; }
     public ICommand PickImageCommand { get; }
-    public ICommand TakePhotoCommand { get; }
     public ICommand AnalyzeCommand { get; }
 
-    public string PlantDisplayName
+    public ScannerPotOptionViewModel? SelectedPot
     {
-        get => _plantDisplayName;
-        set => SetProperty(ref _plantDisplayName, value);
+        get => _selectedPot;
+        set
+        {
+            if (_selectedPot == value)
+                return;
+
+            SetProperty(ref _selectedPot, value);
+
+            if (!_isLoadingPots)
+                ApplySelectedPot();
+        }
+    }
+
+    public ImageSource? PreviewImage
+    {
+        get => _previewImage;
+        set => SetProperty(ref _previewImage, value);
+    }
+
+    public DiseaseDetectionResponse? Result
+    {
+        get => _result;
+        set
+        {
+            SetProperty(ref _result, value);
+            OnPropertyChanged(nameof(HasResult));
+            OnPropertyChanged(nameof(ResultTitle));
+            OnPropertyChanged(nameof(ResultConfidence));
+            OnPropertyChanged(nameof(ResultRecommendation));
+        }
+    }
+
+    public bool HasResult => Result is not null;
+
+    public string SelectedPlantName
+    {
+        get => _selectedPlantName;
+        set => SetProperty(ref _selectedPlantName, value);
     }
 
     public string StatusMessage
@@ -47,73 +85,102 @@ public class PlantScannerViewModel : BaseViewModel
         set => SetProperty(ref _statusMessage, value);
     }
 
-    public string ResultTitle
-    {
-        get => _resultTitle;
-        set => SetProperty(ref _resultTitle, value);
-    }
+    public string ResultTitle =>
+        Result is null
+            ? string.Empty
+            : Result.IsHealthy
+                ? "Biljka izgleda zdravo"
+                : $"Detektovana bolest: {Result.DiseaseNameLocal ?? Result.DiseaseName}";
 
-    public string ConfidenceText
-    {
-        get => _confidenceText;
-        set => SetProperty(ref _confidenceText, value);
-    }
+    public string ResultConfidence =>
+        Result is null
+            ? string.Empty
+            : $"Pouzdanost modela: {Result.Confidence:P1}";
 
-    public string Recommendation
-    {
-        get => _recommendation;
-        set => SetProperty(ref _recommendation, value);
-    }
-
-    public ImageSource? SelectedImageSource
-    {
-        get => _selectedImageSource;
-        set => SetProperty(ref _selectedImageSource, value);
-    }
-
-    public bool HasSelectedImage
-    {
-        get => _hasSelectedImage;
-        set => SetProperty(ref _hasSelectedImage, value);
-    }
-
-    public bool IsResultVisible
-    {
-        get => _isResultVisible;
-        set => SetProperty(ref _isResultVisible, value);
-    }
+    public string ResultRecommendation =>
+        Result?.TreatmentRecommendation ?? string.Empty;
 
     public async Task LoadAsync()
     {
+        if (IsBusy)
+            return;
+
         try
         {
+            IsBusy = true;
             ErrorMessage = null;
+            _isLoadingPots = true;
 
-            // MVP: jedan korisnik, ID = 1
+            var previouslySelectedPotId = SelectedPot?.Id;
+
             var pots = await _apiService.GetPlantPotsByUserAsync(userId: 1);
-            var pot = pots.FirstOrDefault();
-            var plant = pot?.Plants.FirstOrDefault();
 
-            if (plant is null)
+            Pots.Clear();
+
+            foreach (var pot in pots)
             {
-                _activePlantId = null;
-                PlantDisplayName = "Nema aktivne biljke";
-                StatusMessage = "Dodaj biljku u saksiju prije korištenja skenera.";
+                var activePlant = pot.Plants.FirstOrDefault();
+
+                Pots.Add(new ScannerPotOptionViewModel
+                {
+                    Id = pot.Id,
+                    Name = pot.Name ?? $"Saksija #{pot.Id}",
+                    Location = pot.Location,
+                    DisplayName = string.IsNullOrWhiteSpace(pot.Location)
+                        ? pot.Name ?? $"Saksija #{pot.Id}"
+                        : $"{pot.Name} - {pot.Location}",
+
+                    PlantId = activePlant?.Id,
+                    PlantName = activePlant?.Nickname
+                        ?? activePlant?.PlantTypeName
+                        ?? "Nema aktivne biljke"
+                });
+            }
+
+            if (Pots.Count == 0)
+            {
+                ClearSelection("Nije pronađena nijedna saksija.");
                 return;
             }
 
-            _activePlantId = plant.Id;
-
-            PlantDisplayName = !string.IsNullOrWhiteSpace(plant.Nickname)
-                ? plant.Nickname
-                : plant.PlantTypeName ?? "Paradajz";
-
-            StatusMessage = "Odaberi ili uslikaj list paradajza za analizu.";
+            SelectedPot =
+                Pots.FirstOrDefault(p => p.Id == previouslySelectedPotId)
+                ?? Pots.FirstOrDefault();
         }
         catch (Exception ex)
         {
-            ErrorMessage = $"Greška pri učitavanju biljke: {ex.Message}";
+            ErrorMessage = $"Greška pri učitavanju saksija: {ex.Message}";
+            ClearSelection("Nije moguće učitati saksije.");
         }
+        finally
+        {
+            _isLoadingPots = false;
+            IsBusy = false;
+        }
+
+        ApplySelectedPot();
+    }
+
+    private void ApplySelectedPot()
+    {
+        Result = null;
+
+        if (SelectedPot is null)
+        {
+            ClearSelection("Odaberi saksiju za analizu.");
+            return;
+        }
+
+        _selectedPlantId = SelectedPot.PlantId;
+        SelectedPlantName = SelectedPot.PlantName;
+
+        if (_selectedPlantId is null)
+        {
+            StatusMessage = "Odabrana saksija nema aktivnu biljku. Dodaj biljku prije analize.";
+            return;
+        }
+
+        StatusMessage = $"Analiza će biti vezana za biljku: {SelectedPlantName}.";
     }
 
     private async Task PickImageAsync()
@@ -121,17 +188,22 @@ public class PlantScannerViewModel : BaseViewModel
         try
         {
             ErrorMessage = null;
-            IsResultVisible = false;
 
-            var image = await MediaPicker.Default.PickPhotoAsync(new MediaPickerOptions
+            var image = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
             {
-                Title = "Odaberi sliku lista paradajza"
+                Title = "Odaberi fotografiju lista"
             });
 
             if (image is null)
                 return;
 
-            await SetSelectedImageAsync(image);
+            _selectedImage = image;
+
+            var stream = await image.OpenReadAsync();
+            PreviewImage = ImageSource.FromStream(() => stream);
+
+            Result = null;
+            StatusMessage = "Fotografija je odabrana. Pokreni analizu.";
         }
         catch (Exception ex)
         {
@@ -139,73 +211,26 @@ public class PlantScannerViewModel : BaseViewModel
         }
     }
 
-    private async Task TakePhotoAsync()
-    {
-        try
-        {
-            ErrorMessage = null;
-            IsResultVisible = false;
-
-            var cameraStatus = await Permissions.RequestAsync<Permissions.Camera>();
-
-            if (cameraStatus != PermissionStatus.Granted)
-            {
-                ErrorMessage = "Dozvola za kameru nije odobrena.";
-                return;
-            }
-
-            if (!MediaPicker.Default.IsCaptureSupported)
-            {
-                ErrorMessage = "Kamera nije podržana na ovom uređaju/emulatoru.";
-                return;
-            }
-
-            var image = await MediaPicker.Default.CapturePhotoAsync(new MediaPickerOptions
-            {
-                Title = "Uslikaj list paradajza"
-            });
-
-            if (image is null)
-                return;
-
-            await SetSelectedImageAsync(image);
-        }
-        catch (Exception ex)
-        {
-            ErrorMessage = $"Greška pri fotografisanju: {ex.Message}";
-        }
-    }
-
-    private async Task SetSelectedImageAsync(FileResult image)
-    {
-        _selectedImageFile = image;
-
-        await using var stream = await image.OpenReadAsync();
-        using var memoryStream = new MemoryStream();
-
-        await stream.CopyToAsync(memoryStream);
-
-        var imageBytes = memoryStream.ToArray();
-
-        SelectedImageSource = ImageSource.FromStream(() => new MemoryStream(imageBytes));
-        HasSelectedImage = true;
-        StatusMessage = "Slika je spremna za analizu.";
-    }
-
     private async Task AnalyzeAsync()
     {
         if (IsBusy)
             return;
 
-        if (_activePlantId is null)
+        if (SelectedPot is null)
         {
-            ErrorMessage = "Nije pronađena aktivna biljka za analizu.";
+            ErrorMessage = "Prvo odaberi saksiju.";
             return;
         }
 
-        if (_selectedImageFile is null)
+        if (_selectedPlantId is null)
         {
-            ErrorMessage = "Prvo odaberi ili uslikaj sliku lista.";
+            ErrorMessage = "Odabrana saksija nema aktivnu biljku.";
+            return;
+        }
+
+        if (_selectedImage is null)
+        {
+            ErrorMessage = "Prvo odaberi fotografiju lista.";
             return;
         }
 
@@ -213,28 +238,12 @@ public class PlantScannerViewModel : BaseViewModel
         {
             IsBusy = true;
             ErrorMessage = null;
-            IsResultVisible = false;
-
             StatusMessage = "Analiza slike je u toku...";
 
-            var result = await _apiService.AnalyzeDiseaseAsync(
-                _activePlantId.Value,
-                _selectedImageFile
-            );
+            Result = await _apiService.AnalyzeDiseaseAsync(
+                _selectedPlantId.Value,
+                _selectedImage);
 
-            if (result is null)
-            {
-                ErrorMessage = "Backend nije vratio rezultat analize.";
-                StatusMessage = "Analiza nije završena.";
-                return;
-            }
-
-            ResultTitle = BuildResultTitle(result);
-            ConfidenceText = BuildConfidenceText(result.Confidence);
-            Recommendation = result.TreatmentRecommendation
-                ?? "Nema dostupne preporuke za ovu detekciju.";
-
-            IsResultVisible = true;
             StatusMessage = "Analiza je završena.";
         }
         catch (Exception ex)
@@ -248,27 +257,26 @@ public class PlantScannerViewModel : BaseViewModel
         }
     }
 
-    private static string BuildResultTitle(DiseaseDetectionResponse result)
+    private void ClearSelection(string message)
     {
-        if (result.IsHealthy)
-            return "Biljka izgleda zdravo";
-
-        var diseaseName = result.DiseaseNameLocal ?? result.DiseaseName ?? "Nepoznata bolest";
-        var confidence = result.Confidence ?? 0;
-
-        return confidence switch
-        {
-            >= 0.75m => $"Detektovana bolest: {diseaseName}",
-            >= 0.50m => $"Moguća bolest: {diseaseName}",
-            _ => $"Niska pouzdanost: {diseaseName}"
-        };
+        _selectedPlantId = null;
+        SelectedPlantName = "Nije odabrana biljka";
+        StatusMessage = message;
+        Result = null;
     }
+}
 
-    private static string BuildConfidenceText(decimal? confidence)
-    {
-        if (confidence is null)
-            return "Pouzdanost modela: nije dostupna";
+public class ScannerPotOptionViewModel
+{
+    public int Id { get; set; }
 
-        return $"Pouzdanost modela: {confidence * 100:0.#}%";
-    }
+    public string Name { get; set; } = string.Empty;
+
+    public string? Location { get; set; }
+
+    public string DisplayName { get; set; } = string.Empty;
+
+    public int? PlantId { get; set; }
+
+    public string PlantName { get; set; } = "Nema aktivne biljke";
 }

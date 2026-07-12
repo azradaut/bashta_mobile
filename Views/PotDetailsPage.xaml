@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="bashta_mobile.Views.PotDetailsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Detalji biljke">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="18">
+
+            <Label
+                Text="{Binding PotName}"
+                Style="{StaticResource PageTitleLabelStyle}"
+                SemanticProperties.HeadingLevel="Level1" />
+
+            <Border
+                IsVisible="{Binding ErrorMessage, Converter={StaticResource StringNotNullOrEmptyConverter}}"
+                Style="{StaticResource CardBorderStyle}">
+                <Label
+                    Text="{Binding ErrorMessage}"
+                    TextColor="{StaticResource ErrorColor}"
+                    Style="{StaticResource BodyLabelStyle}" />
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="12">
+
+                    <Image
+                        Source="{Binding PlantImageSource}"
+                        HeightRequest="180"
+                        Aspect="AspectFit"
+                        BackgroundColor="{StaticResource CreasedKhaki}" />
+
+                    <Label
+                        Text="{Binding PlantName}"
+                        FontSize="22"
+                        FontAttributes="Bold"
+                        TextColor="{StaticResource EmeraldGreen}" />
+
+                    <Label
+                        Text="{Binding PlantTypeName}"
+                        Style="{StaticResource BodyLabelStyle}" />
+
+                    <Label
+                        Text="{Binding Location}"
+                        Style="{StaticResource BodyLabelStyle}" />
+
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="12">
+
+                    <Label
+                        Text="Trenutno stanje"
+                        Style="{StaticResource SectionTitleLabelStyle}" />
+
+                    <Grid
+                        ColumnDefinitions="*,*"
+                        RowDefinitions="Auto,Auto,Auto"
+                        ColumnSpacing="12"
+                        RowSpacing="12">
+
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="0">
+                            <Label Text="Vlažnost tla" Style="{StaticResource BodyLabelStyle}" />
+                            <Label Text="{Binding CurrentMoisture}" FontSize="24" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="1">
+                            <Label Text="Idealna vlažnost" Style="{StaticResource BodyLabelStyle}" />
+                            <Label Text="{Binding IdealMoisture}" FontSize="24" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="0">
+                            <Label Text="Temperatura" Style="{StaticResource BodyLabelStyle}" />
+                            <Label Text="{Binding CurrentTemperature}" FontSize="20" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="1" Grid.Column="1">
+                            <Label Text="Idealna temperatura" Style="{StaticResource BodyLabelStyle}" />
+                            <Label Text="{Binding IdealTemperature}" FontSize="20" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="2" Grid.Column="0">
+                            <Label Text="Vlažnost zraka" Style="{StaticResource BodyLabelStyle}" />
+                            <Label Text="{Binding Humidity}" FontSize="20" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Row="2" Grid.Column="1">
+                            <Label Text="Svjetlost" Style="{StaticResource BodyLabelStyle}" />
+                            <Label Text="{Binding Light}" FontSize="20" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+
+                    </Grid>
+
+                    <Label
+                        Text="{Binding LastSensorReading}"
+                        FontSize="12"
+                        TextColor="{StaticResource TextSecondaryColor}" />
+
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="10">
+
+                    <Label
+                        Text="Procjena sistema"
+                        Style="{StaticResource SectionTitleLabelStyle}" />
+
+                    <Label
+                        Text="{Binding OverallStatus}"
+                        Style="{StaticResource BodyLabelStyle}" />
+
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="10">
+
+                    <Label
+                        Text="Zalijevanje"
+                        Style="{StaticResource SectionTitleLabelStyle}" />
+
+                    <Label
+                        Text="{Binding WateringInfo}"
+                        Style="{StaticResource BodyLabelStyle}" />
+
+                    <Label
+                        Text="{Binding WateringCount}"
+                        Style="{StaticResource BodyLabelStyle}" />
+
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="10">
+
+                    <Label
+                        Text="Zdravlje biljke"
+                        Style="{StaticResource SectionTitleLabelStyle}" />
+
+                    <Label
+                        Text="{Binding HealthStatus}"
+                        FontAttributes="Bold"
+                        TextColor="{StaticResource EmeraldGreen}" />
+
+                    <Label
+                        Text="{Binding HealthDate}"
+                        Style="{StaticResource BodyLabelStyle}" />
+
+                    <Label
+                        Text="{Binding HealthRecommendation}"
+                        Style="{StaticResource BodyLabelStyle}" />
+
+                </VerticalStackLayout>
+            </Border>
+
+            <ActivityIndicator
+                IsRunning="{Binding IsBusy}"
+                IsVisible="{Binding IsBusy}" />
+
+            <Button
+                Text="Osvježi detalje"
+                Command="{Binding RefreshCommand}"
+                Style="{StaticResource PrimaryButtonStyle}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

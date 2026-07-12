@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
+using bashta_mobile.Helpers;
 using bashta_mobile.Services;
 
 namespace bashta_mobile.ViewModels;
@@ -21,6 +22,7 @@ public class MyPotsViewModel : BaseViewModel
         AddPotCommand = new Command(async () => await AddPotAsync());
         EditPotCommand = new Command<PlantPotCardViewModel>(async pot => await EditPotAsync(pot));
         DeletePotCommand = new Command<PlantPotCardViewModel>(async pot => await DeletePotAsync(pot));
+        OpenDetailsCommand = new Command<PlantPotCardViewModel>(async pot => await OpenDetailsAsync(pot));
     }
 
     public ObservableCollection<PlantPotCardViewModel> Pots { get; }
@@ -29,6 +31,7 @@ public class MyPotsViewModel : BaseViewModel
     public ICommand AddPotCommand { get; }
     public ICommand EditPotCommand { get; }
     public ICommand DeletePotCommand { get; }
+    public ICommand OpenDetailsCommand { get; }
 
     public bool HasPots
     {
@@ -60,7 +63,9 @@ public class MyPotsViewModel : BaseViewModel
             {
                 var activePlant = pot.Plants.FirstOrDefault();
 
-                Pots.Add(new PlantPotCardViewModel
+                var plantTypeName = activePlant?.PlantTypeName ?? "Nije definisano";
+
+                var card = new PlantPotCardViewModel
                 {
                     Id = pot.Id,
                     PlantId = activePlant?.Id,
@@ -75,9 +80,9 @@ public class MyPotsViewModel : BaseViewModel
                         ? "Nema dodane biljke"
                         : !string.IsNullOrWhiteSpace(activePlant.Nickname)
                             ? activePlant.Nickname
-                            : activePlant.PlantTypeName ?? "Paradajz",
+                            : activePlant.PlantTypeName ?? "Biljka",
 
-                    PlantTypeName = activePlant?.PlantTypeName ?? "Nije definisano",
+                    PlantTypeName = plantTypeName,
 
                     Location = string.IsNullOrWhiteSpace(pot.Location)
                         ? "Lokacija nije unesena"
@@ -88,8 +93,30 @@ public class MyPotsViewModel : BaseViewModel
                     FirmwareVersion = pot.FirmwareVersion ?? string.Empty,
 
                     StatusText = pot.IsActive ? "Aktivna saksija" : "Neaktivna saksija",
-                    CreatedAtText = $"Dodana: {pot.CreatedAt.ToLocalTime():dd.MM.yyyy}"
-                });
+                    CreatedAtText = $"Dodana: {pot.CreatedAt.ToLocalTime():dd.MM.yyyy}",
+
+                    PlantImageSource = PlantImageHelper.GetDefaultImage(plantTypeName),
+
+                    LatestDiseaseText = "Nema analiza bolesti",
+                    LatestDiseaseDateText = string.Empty
+                };
+
+                if (card.PlantId is not null)
+                {
+                    var latestDisease = await _apiService.GetLatestDiseaseDetectionAsync(card.PlantId.Value);
+
+                    if (latestDisease is not null)
+                    {
+                        card.LatestDiseaseText = latestDisease.IsHealthy
+                            ? "Posljednja analiza: zdrava biljka"
+                            : $"Posljednja analiza: {latestDisease.DiseaseNameLocal ?? latestDisease.DiseaseName}";
+
+                        card.LatestDiseaseDateText =
+                            $"Datum analize: {latestDisease.CreatedAt.ToLocalTime():dd.MM.yyyy HH:mm}";
+                    }
+                }
+
+                Pots.Add(card);
             }
 
             UpdateSummary();
@@ -116,6 +143,17 @@ public class MyPotsViewModel : BaseViewModel
             return;
 
         await Shell.Current.GoToAsync("edit-pot", new Dictionary<string, object>
+        {
+            ["Pot"] = pot
+        });
+    }
+
+    private static async Task OpenDetailsAsync(PlantPotCardViewModel? pot)
+    {
+        if (pot is null)
+            return;
+
+        await Shell.Current.GoToAsync("pot-details", new Dictionary<string, object>
         {
             ["Pot"] = pot
         });
@@ -173,9 +211,11 @@ public class MyPotsViewModel : BaseViewModel
 public class PlantPotCardViewModel
 {
     public int Id { get; set; }
+
     public int? PlantId { get; set; }
     public int? PlantTypeId { get; set; }
     public string PlantNickname { get; set; } = string.Empty;
+
     public string Name { get; set; } = string.Empty;
     public string PlantName { get; set; } = string.Empty;
     public string PlantTypeName { get; set; } = string.Empty;
@@ -188,4 +228,9 @@ public class PlantPotCardViewModel
 
     public string StatusText { get; set; } = string.Empty;
     public string CreatedAtText { get; set; } = string.Empty;
+
+    public string LatestDiseaseText { get; set; } = "Nema analiza bolesti";
+    public string LatestDiseaseDateText { get; set; } = string.Empty;
+
+    public string PlantImageSource { get; set; } = "plant_default.png";
 }

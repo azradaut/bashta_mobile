@@ -221,6 +221,15 @@ public class ApiService : IApiService
             JsonOptions,
             cancellationToken);
     }
+
+    public async Task<PlantDetailsDto?> GetActivePlantByPotAsync(
+    int potId,
+    CancellationToken cancellationToken = default)
+    {
+        return await GetOrNullAsync<PlantDetailsDto>(
+            $"plant/active/{potId}",
+            cancellationToken);
+    }
     private static string GetContentType(string fileName)
     {
         var extension = Path.GetExtension(fileName).ToLowerInvariant();

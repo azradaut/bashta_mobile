@@ -10,5 +10,6 @@ public partial class AppShell : Shell
 
         Routing.RegisterRoute("add-pot", typeof(AddPotPage));
         Routing.RegisterRoute("edit-pot", typeof(EditPotPage));
+        Routing.RegisterRoute("pot-details", typeof(PotDetailsPage));
     }
 }

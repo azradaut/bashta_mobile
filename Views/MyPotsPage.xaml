@@ -52,29 +52,61 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Border Style="{StaticResource CardBorderStyle}">
-                            <VerticalStackLayout Spacing="10">
 
-                                <Grid ColumnDefinitions="*,Auto">
-                                    <Label
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={x:Reference PotsCollectionView}, Path=BindingContext.OpenDetailsCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Border.GestureRecognizers>
+
+                            <VerticalStackLayout Spacing="12">
+
+                                <Grid ColumnDefinitions="86,*" ColumnSpacing="14">
+
+                                    <Image
                                         Grid.Column="0"
-                                        Text="{Binding Name}"
-                                        FontSize="20"
-                                        FontAttributes="Bold"
-                                        TextColor="{StaticResource TextPrimaryColor}" />
+                                        Source="{Binding PlantImageSource}"
+                                        HeightRequest="76"
+                                        WidthRequest="76"
+                                        Aspect="AspectFill"
+                                        BackgroundColor="{StaticResource CreasedKhaki}" />
 
-                                    <Label
-                                        Grid.Column="1"
-                                        Text="{Binding StatusText}"
-                                        FontSize="12"
-                                        TextColor="{StaticResource EmeraldGreen}"
-                                        VerticalOptions="Center" />
+                                    <VerticalStackLayout Grid.Column="1" Spacing="5">
+
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <Label
+                                                Grid.Column="0"
+                                                Text="{Binding Name}"
+                                                FontSize="20"
+                                                FontAttributes="Bold"
+                                                TextColor="{StaticResource TextPrimaryColor}"
+                                                LineBreakMode="TailTruncation" />
+
+                                            <Label
+                                                Grid.Column="1"
+                                                Text="{Binding StatusText}"
+                                                FontSize="12"
+                                                TextColor="{StaticResource EmeraldGreen}"
+                                                VerticalOptions="Center" />
+                                        </Grid>
+
+                                        <Label
+                                            Text="{Binding PlantName}"
+                                            FontSize="16"
+                                            FontAttributes="Bold"
+                                            TextColor="{StaticResource TextSecondaryColor}" />
+
+                                        <Label
+                                            Text="{Binding LatestDiseaseText}"
+                                            Style="{StaticResource BodyLabelStyle}" />
+
+                                        <Label
+                                            Text="{Binding LatestDiseaseDateText}"
+                                            FontSize="12"
+                                            TextColor="{StaticResource TextSecondaryColor}" />
+
+                                    </VerticalStackLayout>
                                 </Grid>
-
-                                <Label
-                                    Text="{Binding PlantName}"
-                                    FontSize="16"
-                                    FontAttributes="Bold"
-                                    TextColor="{StaticResource TextSecondaryColor}" />
 
                                 <Grid
                                     ColumnDefinitions="Auto,*"
@@ -123,10 +155,15 @@
 
                                 </Grid>
 
+                                <Label
+                                    Text="Dodirni karticu za detaljni prikaz biljke."
+                                    FontSize="12"
+                                    TextColor="{StaticResource TextSecondaryColor}" />
+
                                 <Grid
                                     ColumnDefinitions="*,*"
                                     ColumnSpacing="12"
-                                    Margin="0,12,0,0">
+                                    Margin="0,8,0,0">
 
                                     <Button
                                         Grid.Column="0"
@@ -147,10 +184,10 @@
                                         HeightRequest="52"
                                         FontAttributes="Bold"
                                         SemanticProperties.Description="Obriši saksiju" />
-
                                 </Grid>
 
                             </VerticalStackLayout>
+
                         </Border>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>

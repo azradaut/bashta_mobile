@@ -57,4 +57,8 @@ public interface IApiService
     Task<WateringEventDto?> ManualWaterAsync(
         ManualWateringRequestDto request,
         CancellationToken cancellationToken = default);
+
+    Task<PlantDetailsDto?> GetActivePlantByPotAsync(
+    int potId,
+    CancellationToken cancellationToken = default);
 }
