@@ -26,10 +26,46 @@
                 <VerticalStackLayout Spacing="12">
 
                     <Image
-                        Source="{Binding PlantImageSource}"
-                        HeightRequest="180"
-                        Aspect="AspectFit"
-                        BackgroundColor="{StaticResource CreasedKhaki}" />
+    Source="{Binding PlantImageSource}"
+    HeightRequest="180"
+    Aspect="AspectFit"
+    BackgroundColor="{StaticResource CreasedKhaki}" />
+
+                    <Grid
+    ColumnDefinitions="*,*"
+    ColumnSpacing="12">
+
+                        <HorizontalStackLayout
+    Spacing="8"
+    HorizontalOptions="Center">
+
+                            <Button
+        Text="Promijeni"
+        Command="{Binding ChangePhotoCommand}"
+        FontSize="12"
+        HeightRequest="36"
+        Padding="14,0"
+        CornerRadius="14"
+        BackgroundColor="Transparent"
+        BorderColor="{StaticResource EmeraldGreen}"
+        BorderWidth="1"
+        TextColor="{StaticResource EmeraldGreen}" />
+
+                            <Button
+        Text="Vrati default"
+        Command="{Binding RemovePhotoCommand}"
+        FontSize="12"
+        HeightRequest="36"
+        Padding="14,0"
+        CornerRadius="14"
+        BackgroundColor="Transparent"
+        BorderColor="{StaticResource EgyptianEarth}"
+        BorderWidth="1"
+        TextColor="{StaticResource EgyptianEarth}" />
+
+                        </HorizontalStackLayout>
+
+                    </Grid>
 
                     <Label
                         Text="{Binding PlantName}"
@@ -63,7 +99,7 @@
 
                         <VerticalStackLayout Grid.Row="0" Grid.Column="0">
                             <Label Text="Vlažnost tla" Style="{StaticResource BodyLabelStyle}" />
-                            <Label Text="{Binding CurrentMoisture}" FontSize="24" FontAttributes="Bold" />
+                            <Label Text="{Binding CurrentMoisture}" FontSize="24" FontAttributes="Bold" TextColor="{Binding CurrentMoistureColor}" />
                         </VerticalStackLayout>
 
                         <VerticalStackLayout Grid.Row="0" Grid.Column="1">
@@ -73,7 +109,7 @@
 
                         <VerticalStackLayout Grid.Row="1" Grid.Column="0">
                             <Label Text="Temperatura" Style="{StaticResource BodyLabelStyle}" />
-                            <Label Text="{Binding CurrentTemperature}" FontSize="20" FontAttributes="Bold" />
+                            <Label Text="{Binding CurrentTemperature}" FontSize="20" FontAttributes="Bold" TextColor="{Binding CurrentTemperatureColor}" />
                         </VerticalStackLayout>
 
                         <VerticalStackLayout Grid.Row="1" Grid.Column="1">
@@ -109,8 +145,9 @@
                         Style="{StaticResource SectionTitleLabelStyle}" />
 
                     <Label
-                        Text="{Binding OverallStatus}"
-                        Style="{StaticResource BodyLabelStyle}" />
+    Text="{Binding OverallStatus}"
+    FontAttributes="Bold"
+    TextColor="{Binding OverallStatusColor}" />
 
                 </VerticalStackLayout>
             </Border>
@@ -143,7 +180,7 @@
                     <Label
                         Text="{Binding HealthStatus}"
                         FontAttributes="Bold"
-                        TextColor="{StaticResource EmeraldGreen}" />
+                        TextColor="{Binding HealthStatusColor}" />
 
                     <Label
                         Text="{Binding HealthDate}"

@@ -59,58 +59,46 @@
                                     CommandParameter="{Binding .}" />
                             </Border.GestureRecognizers>
 
-                            <VerticalStackLayout Spacing="12">
+                            <VerticalStackLayout Spacing="10">
 
-                                <Grid ColumnDefinitions="86,*" ColumnSpacing="14">
-
-                                    <Image
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                    <Label
                                         Grid.Column="0"
-                                        Source="{Binding PlantImageSource}"
-                                        HeightRequest="76"
-                                        WidthRequest="76"
-                                        Aspect="AspectFill"
-                                        BackgroundColor="{StaticResource CreasedKhaki}" />
+                                        Text="{Binding Name}"
+                                        FontSize="20"
+                                        FontAttributes="Bold"
+                                        TextColor="{StaticResource TextPrimaryColor}"
+                                        LineBreakMode="TailTruncation" />
 
-                                    <VerticalStackLayout Grid.Column="1" Spacing="5">
-
-                                        <Grid ColumnDefinitions="*,Auto">
-                                            <Label
-                                                Grid.Column="0"
-                                                Text="{Binding Name}"
-                                                FontSize="20"
-                                                FontAttributes="Bold"
-                                                TextColor="{StaticResource TextPrimaryColor}"
-                                                LineBreakMode="TailTruncation" />
-
-                                            <Label
-                                                Grid.Column="1"
-                                                Text="{Binding StatusText}"
-                                                FontSize="12"
-                                                TextColor="{StaticResource EmeraldGreen}"
-                                                VerticalOptions="Center" />
-                                        </Grid>
+                                    <VerticalStackLayout
+                                        Grid.Column="1"
+                                        HorizontalOptions="End"
+                                        Spacing="2">
 
                                         <Label
-                                            Text="{Binding PlantName}"
-                                            FontSize="16"
+                                            Text="{Binding HealthBadgeText}"
+                                            FontSize="13"
                                             FontAttributes="Bold"
-                                            TextColor="{StaticResource TextSecondaryColor}" />
+                                            TextColor="{Binding HealthBadgeColor}"
+                                            HorizontalTextAlignment="End" />
 
                                         <Label
-                                            Text="{Binding LatestDiseaseText}"
-                                            Style="{StaticResource BodyLabelStyle}" />
-
-                                        <Label
-                                            Text="{Binding LatestDiseaseDateText}"
-                                            FontSize="12"
-                                            TextColor="{StaticResource TextSecondaryColor}" />
-
+                                            Text="{Binding StatusText}"
+                                            FontSize="11"
+                                            TextColor="{StaticResource TextSecondaryColor}"
+                                            HorizontalTextAlignment="End" />
                                     </VerticalStackLayout>
                                 </Grid>
 
+                                <Label
+                                    Text="{Binding PlantName}"
+                                    FontSize="16"
+                                    FontAttributes="Bold"
+                                    TextColor="{StaticResource TextSecondaryColor}" />
+
                                 <Grid
                                     ColumnDefinitions="Auto,*"
-                                    RowDefinitions="Auto,Auto,Auto"
+                                    RowDefinitions="Auto,Auto,Auto,Auto"
                                     ColumnSpacing="10"
                                     RowSpacing="8">
 
@@ -143,12 +131,35 @@
                                     <Label
                                         Grid.Row="2"
                                         Grid.Column="0"
+                                        Text="Bolest:"
+                                        FontAttributes="Bold"
+                                        TextColor="{StaticResource TextPrimaryColor}" />
+
+                                    <VerticalStackLayout
+                                        Grid.Row="2"
+                                        Grid.Column="1"
+                                        Spacing="2">
+
+                                        <Label
+                                            Text="{Binding LatestDiseaseText}"
+                                            Style="{StaticResource BodyLabelStyle}" />
+
+                                        <Label
+                                            Text="{Binding LatestDiseaseDateText}"
+                                            IsVisible="{Binding LatestDiseaseDateText, Converter={StaticResource StringNotNullOrEmptyConverter}}"
+                                            FontSize="12"
+                                            TextColor="{StaticResource TextSecondaryColor}" />
+                                    </VerticalStackLayout>
+
+                                    <Label
+                                        Grid.Row="3"
+                                        Grid.Column="0"
                                         Text="Datum:"
                                         FontAttributes="Bold"
                                         TextColor="{StaticResource TextPrimaryColor}" />
 
                                     <Label
-                                        Grid.Row="2"
+                                        Grid.Row="3"
                                         Grid.Column="1"
                                         Text="{Binding CreatedAtText}"
                                         Style="{StaticResource BodyLabelStyle}" />

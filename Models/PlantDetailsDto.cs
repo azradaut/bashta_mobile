@@ -21,4 +21,7 @@ public class PlantDetailsDto
 
     [JsonPropertyName("plantType")]
     public PlantTypeDto? PlantType { get; set; }
+    
+    [JsonPropertyName("imagePath")]
+    public string? ImagePath { get; set; }
 }

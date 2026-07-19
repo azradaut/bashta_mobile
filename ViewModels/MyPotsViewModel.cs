@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows.Input;
-using bashta_mobile.Helpers;
+using bashta_mobile.Models;
 using bashta_mobile.Services;
 
 namespace bashta_mobile.ViewModels;
@@ -63,8 +63,6 @@ public class MyPotsViewModel : BaseViewModel
             {
                 var activePlant = pot.Plants.FirstOrDefault();
 
-                var plantTypeName = activePlant?.PlantTypeName ?? "Nije definisano";
-
                 var card = new PlantPotCardViewModel
                 {
                     Id = pot.Id,
@@ -82,7 +80,7 @@ public class MyPotsViewModel : BaseViewModel
                             ? activePlant.Nickname
                             : activePlant.PlantTypeName ?? "Biljka",
 
-                    PlantTypeName = plantTypeName,
+                    PlantTypeName = activePlant?.PlantTypeName ?? "Nije definisano",
 
                     Location = string.IsNullOrWhiteSpace(pot.Location)
                         ? "Lokacija nije unesena"
@@ -95,26 +93,49 @@ public class MyPotsViewModel : BaseViewModel
                     StatusText = pot.IsActive ? "Aktivna saksija" : "Neaktivna saksija",
                     CreatedAtText = $"Dodana: {pot.CreatedAt.ToLocalTime():dd.MM.yyyy}",
 
-                    PlantImageSource = PlantImageHelper.GetDefaultImage(plantTypeName),
-
                     LatestDiseaseText = "Nema analiza bolesti",
-                    LatestDiseaseDateText = string.Empty
+                    LatestDiseaseDateText = string.Empty,
+
+                    HealthBadgeText = "Nepoznato",
+                    HealthBadgeColor = "#6B7280"
                 };
+
+                DiseaseDetectionResponse? latestDisease = null;
+                SensorReadingDto? latestSensor = null;
+                WateringStatusDto? wateringStatus = null;
 
                 if (card.PlantId is not null)
                 {
-                    var latestDisease = await _apiService.GetLatestDiseaseDetectionAsync(card.PlantId.Value);
-
-                    if (latestDisease is not null)
+                    try
                     {
-                        card.LatestDiseaseText = latestDisease.IsHealthy
-                            ? "Posljednja analiza: zdrava biljka"
-                            : $"Posljednja analiza: {latestDisease.DiseaseNameLocal ?? latestDisease.DiseaseName}";
-
-                        card.LatestDiseaseDateText =
-                            $"Datum analize: {latestDisease.CreatedAt.ToLocalTime():dd.MM.yyyy HH:mm}";
+                        latestDisease = await _apiService.GetLatestDiseaseDetectionAsync(card.PlantId.Value);
+                    }
+                    catch
+                    {
+                        latestDisease = null;
                     }
                 }
+
+                try
+                {
+                    latestSensor = await _apiService.GetLatestSensorReadingAsync(card.Id);
+                }
+                catch
+                {
+                    latestSensor = null;
+                }
+
+                try
+                {
+                    wateringStatus = await _apiService.GetWateringStatusAsync(card.Id);
+                }
+                catch
+                {
+                    wateringStatus = null;
+                }
+
+                ApplyDiseaseText(card, latestDisease);
+                ApplyCardStatus(card, latestDisease, latestSensor, wateringStatus);
 
                 Pots.Add(card);
             }
@@ -130,6 +151,87 @@ public class MyPotsViewModel : BaseViewModel
         {
             IsBusy = false;
         }
+    }
+
+    private static void ApplyDiseaseText(
+        PlantPotCardViewModel card,
+        DiseaseDetectionResponse? latestDisease)
+    {
+        if (latestDisease is null)
+        {
+            card.LatestDiseaseText = "Nema analiza bolesti";
+            card.LatestDiseaseDateText = string.Empty;
+            return;
+        }
+
+        card.LatestDiseaseText = latestDisease.IsHealthy
+            ? "Posljednja analiza: zdrava biljka"
+            : $"Posljednja analiza: {latestDisease.DiseaseNameLocal ?? latestDisease.DiseaseName}";
+
+        card.LatestDiseaseDateText =
+            $"Datum analize: {latestDisease.CreatedAt.ToLocalTime():dd.MM.yyyy HH:mm}";
+    }
+
+    private static void ApplyCardStatus(
+        PlantPotCardViewModel card,
+        DiseaseDetectionResponse? latestDisease,
+        SensorReadingDto? latestSensor,
+        WateringStatusDto? wateringStatus)
+    {
+        if (card.PlantId is null)
+        {
+            SetStatus(card, "Nepoznato", "#6B7280");
+            return;
+        }
+
+        if (latestDisease is not null && !latestDisease.IsHealthy)
+        {
+            SetStatus(card, "Kritično", "#C0392B");
+            return;
+        }
+
+        var moisture = latestSensor?.SoilMoisture;
+        var minMoisture = wateringStatus?.MinRecommendedSoilMoisture;
+        var maxMoisture = wateringStatus?.MaxRecommendedSoilMoisture;
+
+        if (moisture is null || minMoisture is null || maxMoisture is null)
+        {
+            if (latestDisease?.IsHealthy == true)
+                SetStatus(card, "Dobro", "#809076");
+            else
+                SetStatus(card, "Nepoznato", "#6B7280");
+
+            return;
+        }
+
+        if (moisture < minMoisture - 10 || moisture > maxMoisture + 10)
+        {
+            SetStatus(card, "Kritično", "#C0392B");
+            return;
+        }
+
+        if (moisture < minMoisture || moisture > maxMoisture)
+        {
+            SetStatus(card, "Pažnja", "#B86A30");
+            return;
+        }
+
+        if (latestDisease?.IsHealthy == true)
+        {
+            SetStatus(card, "Odlično", "#2E7D32");
+            return;
+        }
+
+        SetStatus(card, "Dobro", "#809076");
+    }
+
+    private static void SetStatus(
+        PlantPotCardViewModel card,
+        string text,
+        string color)
+    {
+        card.HealthBadgeText = text;
+        card.HealthBadgeColor = color;
     }
 
     private static async Task AddPotAsync()
@@ -232,5 +334,6 @@ public class PlantPotCardViewModel
     public string LatestDiseaseText { get; set; } = "Nema analiza bolesti";
     public string LatestDiseaseDateText { get; set; } = string.Empty;
 
-    public string PlantImageSource { get; set; } = "plant_default.png";
+    public string HealthBadgeText { get; set; } = "Nepoznato";
+    public string HealthBadgeColor { get; set; } = "#6B7280";
 }

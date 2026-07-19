@@ -230,6 +230,48 @@ public class ApiService : IApiService
             $"plant/active/{potId}",
             cancellationToken);
     }
+    public async Task<PlantPhotoResponseDto?> UploadPlantPhotoAsync(
+    int plantId,
+    FileResult imageFile,
+    CancellationToken cancellationToken = default)
+    {
+        await using var stream = await imageFile.OpenReadAsync();
+
+        using var form = new MultipartFormDataContent();
+
+        var imageContent = new StreamContent(stream);
+
+        var contentType = string.IsNullOrWhiteSpace(imageFile.ContentType)
+            ? "image/jpeg"
+            : imageFile.ContentType;
+
+        imageContent.Headers.ContentType =
+            new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
+
+        form.Add(imageContent, "image", imageFile.FileName);
+
+        var response = await _httpClient.PostAsync(
+            $"plant/{plantId}/photo",
+            form,
+            cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadFromJsonAsync<PlantPhotoResponseDto>(
+            JsonOptions,
+            cancellationToken);
+    }
+
+    public async Task RemovePlantPhotoAsync(
+        int plantId,
+        CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.DeleteAsync(
+            $"plant/{plantId}/photo",
+            cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+    }
     private static string GetContentType(string fileName)
     {
         var extension = Path.GetExtension(fileName).ToLowerInvariant();

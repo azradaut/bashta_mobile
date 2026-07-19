@@ -61,4 +61,13 @@ public interface IApiService
     Task<PlantDetailsDto?> GetActivePlantByPotAsync(
     int potId,
     CancellationToken cancellationToken = default);
+
+    Task<PlantPhotoResponseDto?> UploadPlantPhotoAsync(
+    int plantId,
+    FileResult imageFile,
+    CancellationToken cancellationToken = default);
+
+    Task RemovePlantPhotoAsync(
+        int plantId,
+        CancellationToken cancellationToken = default);
 }
